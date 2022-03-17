@@ -129,8 +129,15 @@ func Test_pool_enableMaxGoRoutines(t *testing.T) {
 		maxGoRoutines: 2,
 		queueSize:     100,
 		workChan:      make(chan work, 100),
-		ttl:           10,
+		ttl:           100,
 	}
+	p.workChan <- work{
+		f: func(args ...interface{}) {
+			fmt.Println(args[0], args[1])
+		},
+		args: []interface{}{"go", "lang"},
+	}
+
 	tests := []struct {
 		name string
 	}{
@@ -197,38 +204,6 @@ func Test_pool_enableQueue(t *testing.T) {
 		})
 	}
 }
-
-//func Test_worker(t *testing.T) {
-//	type arg struct {
-//		id   int
-//		jobs <-chan work
-//		p    work
-//	}
-//	p := &pool{
-//		procs:         1,
-//		maxGoRoutines: 2,
-//		queueSize:     100,
-//		workChan:      make(chan work, 100),
-//		ttl:           10,
-//	}
-//
-//	tests := []struct {
-//		name string
-//		args arg
-//	}{
-//		{
-//			name: "TestCase - 1",
-//			args: arg{id: 1,
-//				jobs: p.workChan},
-//		},
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			p.enableMaxGoRoutines()
-//			worker(tt.args.id, tt.args.jobs, p)
-//		})
-//	}
-//}
 
 func Test_pool_Stop(t *testing.T) {
 	p := &pool{
